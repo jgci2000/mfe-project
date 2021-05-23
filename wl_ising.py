@@ -2,9 +2,8 @@
 
 import numpy as np
 
-L = 4
 
-# getsystem()
+L = 4
 
 dim = 2
 lattice = "SS"
@@ -32,11 +31,8 @@ run = 0
 flatness = 0.9
 f_final = 1 + pow(10, - 8)
 
-# string NN_table_file_name = "./neighbour_tables/neighbour_table_" + to_string(dim) + "D_" + lattice + 
-# "_" + to_string(NN) + "NN_L" + to_string(L) + ".txt";
-# string norm_factor_file_name = "./coefficients/coefficients_" + to_string(N_atm) + "d2.txt";
-# string save_file = to_string(run) + "_JDOS_WL_Ising_" + to_string(dim) + "D_" + lattice + "_L" + to_string(L) + "_f" + 
-# to_string((int) - log10(f_final - 1)) + "_flatness" + to_string((int) (flatness * 100));
+# output inicial 
+
 
 #  Initialize vectors and read files
 
@@ -44,8 +40,8 @@ spins_vector = np.zeros(N_atm)
 NN_table = np.zeros((N_atm,NN))
 norm_factor = np.zeros(NM)
 
-    # read_NN_talbe(NN_table_file_name, NN_table);
-    # read_norm_factor(norm_factor_file_name, norm_factor);
+# read_NN_talbe(NN_table_file_name, NN_table);
+# read_norm_factor(norm_factor_file_name, norm_factor);
 
 ln_JDOS = np.zeros((NE,NM))
 JDOS = np.zeros((NE,NM))
@@ -76,7 +72,7 @@ for i in range(N_atm):
 
 E_config /= 2
 
-# idx_E_config = energies[int(E_config)]
+idx_E_config = energies[int(E_config)]
 idx_M_config = magnetizations[int(M_config)]
 
 # Implementar timing (...)
@@ -109,13 +105,13 @@ while f>f_final:
 
         hist[idx_E_config][idx_M_config]+=1
         ln_JDOS[idx_E_config][idx_M_config] += np.log(f)
-
+        
         mc_sweep+=1
 
         if np.mod(mc_sweep,10000)==0:
 
-            avg_h = average_hist(hist, NE * NM)
-            min_h = min_hist(hist, NE * NM)
+            avg_h = np.average(hist)
+            min_h = np.min(hist)
 
             if min_h >= avg_h*flateness:
 
@@ -135,9 +131,13 @@ while f>f_final:
 
 ## Normalizacao (do matlab):
 
+ln_JDOS[ln_JDOS > 0] = ln_JDOS[ln_JDOS > 0] - ln_JDOS[energies == - (1 / 2) * NN * N_atm][magnetizations == - N_atm] + np.log(2)
+JDOS = np.zeros((NE, NM))
 
-
-
+for i in range(NE):
+    for j in range(NM):
+        if 0< ln_JDOS[i][j] < 0.001:
+            JDOS[i][j] = np.exp(ln_JDOS[i][j])/2
 
 ## output final:
 
