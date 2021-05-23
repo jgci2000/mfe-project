@@ -2,7 +2,6 @@
 
 import numpy as np
 
-
 L = 4
 
 dim = 2
@@ -16,8 +15,21 @@ max_M = N_atm
 NE = int(1 + (max_E / 2))
 NM = N_atm + 1
 
-energies = np.linspace(-max_E,max_E,NE)
-magnetizations = np.linspace(-max_M,max_M,NM)
+energies_keys = np.linspace(-max_E,max_E,NE)
+magnetizations_keys = np.linspace(-max_M,max_M,NM)
+
+energies=dict.fromkeys(energies_keys)
+magnetizations=dict.fromkeys(magnetizations_keys)
+
+idx_temp=0
+for x in energies_keys:
+    energies[x]=idx_temp
+    idx_temp+=1 
+
+idx_temp=0
+for x in magnetizations_keys:
+    magnetizations[x]=idx_temp
+    idx_temp+=1 
 
 run = 0
 f = np.exp(1)
@@ -30,8 +42,6 @@ f_final = 1 + pow(10, - 8)
 #  Initialize vectors and read files
 
 spins_vector = np.zeros(N_atm)
-# NN_table = np.zeros((N_atm,NN))
-# norm_factor = np.zeros(NM)
 
 NN_table_file_name = "./neighbour_tables/neighbour_table_" + str(dim) + "D_" + str(lattice) + "_" + str(NN) + "NN_L" + str(L) + ".txt"
 norm_factor_file_name = "./coefficients/coefficients_" + str(N_atm) + "d2.txt"
@@ -55,7 +65,6 @@ for i in range(NE):
 mc_sweep=0
 
 for i in range(N_atm):
-    # if ((rand_xoshiro256pp() % 2) + 1 == 1) 
     if np.mod(np.random.rand(1),2) == 0:
         spins_vector[i] = 1
     else: 
@@ -91,10 +100,9 @@ while f>f_final:
         new_idx_E_config = energies[int(new_E_config)]
         new_idx_M_config = magnetizations[int(new_M_config)]
 
-        ratio = np.exp(ln_JDOS[idx_E_config][idx_M_config] - ln_JDOS[new_idx_E_config][new_idx_M_config])
-
-        # if (ratio >= 1 || ((ld) rand_xoshiro256pp() / (ld) UINT64_MAX) < ratio)
-        if (ratio >= 1 or np.random.rand() < ratio):
+        ratio = np.exp(ln_JDOS[idx_E_config][idx_M_config]- ln_JDOS[new_idx_E_config][new_idx_M_config])
+       
+        if (ratio >= 1 or np.random.rand(1) < ratio):
             spins_vector[flip_idx] = - spins_vector[flip_idx]
             
             E_config = new_E_config
@@ -112,7 +120,7 @@ while f>f_final:
             avg_h = np.average(hist)
             min_h = np.min(hist)
 
-            if min_h >= avg_h*flateness:
+            if min_h >= avg_h*flatness:
 
                 # timing
 
