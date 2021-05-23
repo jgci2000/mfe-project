@@ -50,9 +50,6 @@ norm_factor_file_name = "./coefficients/coefficients_" + str(N_atm) + "d2.txt"
 NN_table=np.loadtxt(NN_table_file_name, delimiter=' ')
 norm_factor=np.loadtxt(norm_factor_file_name, delimiter=' ')
 
-# print(NN_table)
-# print(norm_factor)
-
 ln_JDOS = np.zeros((NE,NM))
 JDOS = np.zeros((NE,NM))
 hist = np.zeros((NE,NM))
@@ -84,7 +81,6 @@ E_config /= 2
 idx_E_config = energies[E_config]
 idx_M_config = magnetizations[M_config]
 
-# Implementar timing
 method_start= time.perf_counter()
 
 loop_start= time.perf_counter()
@@ -119,7 +115,6 @@ while f>f_final:
 
         hist[idx_E_config][idx_M_config]+=1
         ln_JDOS[idx_E_config][idx_M_config] += np.log(f)
-        JDOS[idx_E_config][idx_M_config] += f
         
         mc_sweep+=1
 
@@ -127,12 +122,8 @@ while f>f_final:
 
             avg_h = np.average(hist[hist!=0])
             min_h = np.min(hist[hist!=0])
-            # print(hist)
-            # print(avg_h,min_h)
 
             if min_h >= avg_h*flatness:
-
-                # timing
 
                 loop_dur=time.perf_counter()-loop_start    
                 console_output = "f: 1+1E" + str(np.log10(f - 1)) + "/1+1E" + str(int(np.log10(f_final - 1))) + " | sweeps: " + str(mc_sweep) + " | flat time: " + str(loop_dur) + "s"
@@ -146,19 +137,18 @@ while f>f_final:
                         hist[i][j]=0
 
 
-## Normalizacao (do matlab):
+# Normalizacao:
 
-# # ln_JDOS[ln_JDOS > 0] = ln_JDOS[ln_JDOS > 0] - ln_JDOS[energies == - (1 / 2) * NN * N_atm][magnetizations == - N_atm] + np.log(2)
-# JDOS = np.zeros((NE, NM))
-
-# for i in range(NE):
-#     for j in range(NM):
-#         if 0< ln_JDOS[i][j] < 0.001:
-#             JDOS[i][j] = np.exp(ln_JDOS[i][j])/2
+for i in range(NE):
+    for j in range(NM):
+        if ln_JDOS[i][j] > 0:
+            JDOS[i][j] = np.exp(ln_JDOS[i][j] - ln_JDOS[0][0] + np.log(2)) / 2; 
 
 #  output final:
 runtime= time.perf_counter()-method_start
 print("Runtime: ",runtime,"s")
 
-print("JDOS:\n")
-print(JDOS)
+# print("JDOS:\n")
+# print(JDOS)
+
+np.savetxt("JDOS_result.txt",JDOS)
