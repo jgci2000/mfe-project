@@ -21,27 +21,26 @@ magnetizations = np.linspace(-max_M,max_M,NM)
 
 run = 0
 f = np.exp(1)
-f_final = 0.0
-flateness = 0.0
-
-# falta meter os parametros como entradas:
-
-print("No parameters selected, reseting do default.")
-run = 0
 flatness = 0.9
 f_final = 1 + pow(10, - 8)
 
-# output inicial 
+# >>>>  output inicial 
 
 
 #  Initialize vectors and read files
 
 spins_vector = np.zeros(N_atm)
-NN_table = np.zeros((N_atm,NN))
-norm_factor = np.zeros(NM)
+# NN_table = np.zeros((N_atm,NN))
+# norm_factor = np.zeros(NM)
 
-# read_NN_talbe(NN_table_file_name, NN_table);
-# read_norm_factor(norm_factor_file_name, norm_factor);
+NN_table_file_name = "./neighbour_tables/neighbour_table_" + str(dim) + "D_" + str(lattice) + "_" + str(NN) + "NN_L" + str(L) + ".txt"
+norm_factor_file_name = "./coefficients/coefficients_" + str(N_atm) + "d2.txt"
+
+NN_table=np.loadtxt(NN_table_file_name, delimiter=' ')
+norm_factor=np.loadtxt(norm_factor_file_name, delimiter=' ')
+
+print(NN_table)
+print(norm_factor)
 
 ln_JDOS = np.zeros((NE,NM))
 JDOS = np.zeros((NE,NM))
@@ -75,7 +74,7 @@ E_config /= 2
 idx_E_config = energies[int(E_config)]
 idx_M_config = magnetizations[int(M_config)]
 
-# Implementar timing (...)
+# >> Implementar timing
 
 while f>f_final:
 
@@ -118,7 +117,7 @@ while f>f_final:
                 # timing
 
 
-                # output
+                # >>>>>>> output
 
 
                 f=np.sqrt(f)
@@ -139,5 +138,5 @@ for i in range(NE):
         if 0< ln_JDOS[i][j] < 0.001:
             JDOS[i][j] = np.exp(ln_JDOS[i][j])/2
 
-## output final:
+# >>>>>  output final:
 
