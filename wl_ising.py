@@ -1,6 +1,7 @@
 # Implementacao Python do WL
 
 import numpy as np
+import time
 
 L = 4
 
@@ -36,21 +37,21 @@ f = np.exp(1)
 flatness = 0.9
 f_final = 1 + pow(10, - 8)
 
-# >>>>  output inicial 
-
+console_output = "run: " + str(run) + " | L: " + str(L) + " | f_final: 1+1E" + str(int(np.log10(f_final - 1))) + " | flatness: " + str((int) (flatness * 100)) + " | dim: " + str(dim) + "D | lattice: " + lattice
+print(console_output)
 
 #  Initialize vectors and read files
 
 spins_vector = np.zeros(N_atm)
 
-NN_table_file_name = "./neighbour_tables/neighbour_table_" + str(dim) + "D_" + str(lattice) + "_" + str(NN) + "NN_L" + str(L) + ".txt"
+NN_table_file_name = "./neighbour_tables/neighbour_table_" + str(dim) + "D_" + lattice + "_" + str(NN) + "NN_L" + str(L) + ".txt"
 norm_factor_file_name = "./coefficients/coefficients_" + str(N_atm) + "d2.txt"
 
 NN_table=np.loadtxt(NN_table_file_name, delimiter=' ')
 norm_factor=np.loadtxt(norm_factor_file_name, delimiter=' ')
 
-print(NN_table)
-print(norm_factor)
+# print(NN_table)
+# print(norm_factor)
 
 ln_JDOS = np.zeros((NE,NM))
 JDOS = np.zeros((NE,NM))
@@ -65,7 +66,7 @@ for i in range(NE):
 mc_sweep=0
 
 for i in range(N_atm):
-    if np.mod(np.random.rand(1),2) == 0:
+    if np.random.randint(2) == 0:
         spins_vector[i] = 1
     else: 
         spins_vector[i] = -1
@@ -80,16 +81,22 @@ for i in range(N_atm):
 
 E_config /= 2
 
-idx_E_config = energies[int(E_config)]
-idx_M_config = magnetizations[int(M_config)]
+idx_E_config = energies[E_config]
+idx_M_config = magnetizations[M_config]
 
-# >> Implementar timing
+# Implementar timing
+method_start= time.perf_counter()
+
+loop_start= time.perf_counter()
 
 while f>f_final:
 
+    if mc_sweep == 0:
+        loop_start = time.perf_counter()
+
     for idx in range(N_atm):
 
-        flip_idx = int(np.random.rand(1)%N_atm)
+        flip_idx = np.random.randint(N_atm)
 
         delta_E=0
         for a in range(NN):
@@ -97,11 +104,11 @@ while f>f_final:
 
         new_E_config = E_config - 2 * delta_E
         new_M_config  = M_config - 2 * spins_vector[flip_idx]
-        new_idx_E_config = energies[int(new_E_config)]
-        new_idx_M_config = magnetizations[int(new_M_config)]
+        new_idx_E_config = energies[new_E_config]
+        new_idx_M_config = magnetizations[new_M_config]
 
         ratio = np.exp(ln_JDOS[idx_E_config][idx_M_config]- ln_JDOS[new_idx_E_config][new_idx_M_config])
-       
+        
         if (ratio >= 1 or np.random.rand(1) < ratio):
             spins_vector[flip_idx] = - spins_vector[flip_idx]
             
@@ -112,21 +119,24 @@ while f>f_final:
 
         hist[idx_E_config][idx_M_config]+=1
         ln_JDOS[idx_E_config][idx_M_config] += np.log(f)
+        JDOS[idx_E_config][idx_M_config] += f
         
         mc_sweep+=1
 
         if np.mod(mc_sweep,10000)==0:
 
-            avg_h = np.average(hist)
-            min_h = np.min(hist)
+            avg_h = np.average(hist[hist!=0])
+            min_h = np.min(hist[hist!=0])
+            # print(hist)
+            # print(avg_h,min_h)
 
             if min_h >= avg_h*flatness:
 
                 # timing
 
-
-                # >>>>>>> output
-
+                loop_dur=time.perf_counter()-loop_start    
+                console_output = "f: 1+1E" + str(np.log10(f - 1)) + "/1+1E" + str(int(np.log10(f_final - 1))) + " | sweeps: " + str(mc_sweep) + " | flat time: " + str(loop_dur) + "s"
+                print(console_output)
 
                 f=np.sqrt(f)
                 mc_sweep=0
@@ -138,13 +148,17 @@ while f>f_final:
 
 ## Normalizacao (do matlab):
 
-ln_JDOS[ln_JDOS > 0] = ln_JDOS[ln_JDOS > 0] - ln_JDOS[energies == - (1 / 2) * NN * N_atm][magnetizations == - N_atm] + np.log(2)
-JDOS = np.zeros((NE, NM))
+# # ln_JDOS[ln_JDOS > 0] = ln_JDOS[ln_JDOS > 0] - ln_JDOS[energies == - (1 / 2) * NN * N_atm][magnetizations == - N_atm] + np.log(2)
+# JDOS = np.zeros((NE, NM))
 
-for i in range(NE):
-    for j in range(NM):
-        if 0< ln_JDOS[i][j] < 0.001:
-            JDOS[i][j] = np.exp(ln_JDOS[i][j])/2
+# for i in range(NE):
+#     for j in range(NM):
+#         if 0< ln_JDOS[i][j] < 0.001:
+#             JDOS[i][j] = np.exp(ln_JDOS[i][j])/2
 
-# >>>>>  output final:
+#  output final:
+runtime= time.perf_counter()-method_start
+print("Runtime: ",runtime,"s")
 
+print("JDOS:\n")
+print(JDOS)
