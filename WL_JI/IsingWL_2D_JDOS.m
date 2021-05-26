@@ -5,7 +5,7 @@ close
 % João Inácio, Aug. 29, 2020
 
     % Constants
-L = 2;              % Number of spins for each side of the lattice
+L = 4;              % Number of spins for each side of the lattice
 NN = 4;             % Number of neighvour spins
 N_SPINS = L * L;     % Number of spins
 J = 1;              % Interaction strenght between particles
