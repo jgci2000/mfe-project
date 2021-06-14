@@ -4,7 +4,6 @@
 #
 
 import numpy as np
-import matplotlib.pyplot as plt
 import time
 from multiprocessing import Pool
 
@@ -73,7 +72,21 @@ def metropolis(T, N_atm, NN, NN_table, n_vals, n_equi, skip):
             M4_mean += M**4
             M_abs_mean += np.abs(M)
 
-    return np.array([E_mean, E2_mean, M_mean, M2_mean, M4_mean, M_abs_mean]) / n_vals
+    E_mean /= n_vals
+    E2_mean /= n_vals
+    M_mean /= n_vals
+    M2_mean /= n_vals
+    M4_mean /= n_vals
+    M_abs_mean /= n_vals
+    
+    E_mean /= N_atm
+    E2_mean /= N_atm
+    M_mean /= N_atm
+    M2_mean /= N_atm
+    M4_mean /= N_atm
+    M_abs_mean /= N_atm 
+    
+    return np.array([T, E_mean, E2_mean, M_mean, M2_mean, M4_mean, M_abs_mean])
 
 def simulate(T):
     """
@@ -96,7 +109,7 @@ def simulate(T):
     
     # Define the system parameters and read files
     
-    L = 4
+    L = 16
 
     dim = 2
     lattice = "SS"
@@ -154,7 +167,7 @@ if __name__ == "__main__":
     
     # Temperatures and parameters for computations
     
-    NT = 16
+    NT = 28
     temperatures = np.linspace(0.1, 5, NT)
     
     E_mean = np.zeros(NT)
@@ -174,12 +187,6 @@ if __name__ == "__main__":
     
     met_time = time.perf_counter() - met_start
     print("Total Wall Time: {:.5f}".format(met_time))
-   
-    for i in range(len(temperatures)):
-        M_abs_mean[i] = ret[i][5]
     
-    plt.figure(1)
-    plt.plot(temperatures, M_abs_mean)
-    
-    plt.show()
+    np.savetxt("metropolis_Ising_SS_L16", ret)
     
