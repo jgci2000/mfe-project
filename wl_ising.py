@@ -5,7 +5,7 @@ import time
 
 # System and simualtion parameters
 
-L = 4
+L = 8
 
 dim = 2
 lattice = "SS"
