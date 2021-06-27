@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import time
 import numpy as np
 from matplotlib import pyplot as plt
@@ -17,7 +19,7 @@ def main():
     lattice = "SS"
     NN = 4
     
-    L = 16
+    L = 4
     N_atm = 1 * L ** 2
     
     max_E = (1 / 2) * NN * N_atm
@@ -25,7 +27,7 @@ def main():
 
     NE = int(1 + (max_E / 2))
     NM = N_atm + 1
-    NT = 50
+    NT = 100
     
     energies = np.linspace(- max_E, max_E, NE)
     magnetizations = np.linspace(- max_M, max_M, NM)
@@ -38,7 +40,7 @@ def main():
     JDOS = np.loadtxt(file_name + ".txt")
         
     # Compute thermodynamics from mean JDOS
-    temperatures = np.linspace(0.1, 5, NT)
+    temperatures = np.linspace(1, 4, NT)
     beta_vals = 1 / (kB * temperatures)
     
     # Partition function and Helmholtz free energy
@@ -187,7 +189,7 @@ def main():
     
     axs[1, 1].plot(temperatures[1:], mean_S, '.-b')
     axs[1, 1].set_title("Mean Entropy per spin as a function of T | L = " + str(L))
-    
+        
     print("Script runtime: {:.4f}s".format(time.process_time() - start))
     plt.show()
     

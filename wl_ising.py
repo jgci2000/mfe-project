@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Implementacao Python do WL
 
 import numpy as np

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 # Parallel Metropolis sampling for the Ising Model
 # João Inácio, June 2nd, 2021
