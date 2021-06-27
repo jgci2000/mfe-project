@@ -16,13 +16,13 @@ def main():
     # Some constants and global arrays
     kB = 1
     
-    dim = "2D"
+    dim = "3D"
 
     if dim == "2D":
         lattice = "SS"
         NN = 4
         NT = 100
-        temperatures = np.linspace(0.5, 5, NT, dtype=np.float128)
+        temperatures = np.linspace(1, 5, NT, dtype=np.longdouble)
         L_vals = np.array([4, 8, 16])
         Tc_Exact = 2.269
         
@@ -35,7 +35,7 @@ def main():
         lattice = "SC"
         NN = 6
         NT = 200
-        temperatures = np.linspace(1, 7, NT, dtype=np.float128)
+        temperatures = np.linspace(1.5, 7, NT, dtype=np.longdouble)
         L_vals = np.array([4, 6, 7])
         Tc_Exact = 4.51
         
@@ -48,24 +48,24 @@ def main():
     
     # Initialization of thermodynamic arrays
     magnetizations = list()
-    M = np.zeros((len(L_vals), len(temperatures)), dtype=np.float128)
-    M2 = np.zeros((len(L_vals), len(temperatures)), dtype=np.float128)
-    M4 = np.zeros((len(L_vals), len(temperatures)), dtype=np.float128)
-    mod_M = np.zeros((len(L_vals), len(temperatures)), dtype=np.float128)
+    M = np.zeros((len(L_vals), len(temperatures)), dtype=np.longdouble)
+    M2 = np.zeros((len(L_vals), len(temperatures)), dtype=np.longdouble)
+    M4 = np.zeros((len(L_vals), len(temperatures)), dtype=np.longdouble)
+    mod_M = np.zeros((len(L_vals), len(temperatures)), dtype=np.longdouble)
     
     F = list()
-    M_min_F = np.zeros((len(L_vals), len(temperatures)), dtype=np.float128)
-    min_F = np.zeros((len(L_vals), len(temperatures)), dtype=np.float128)
+    M_min_F = np.zeros((len(L_vals), len(temperatures)), dtype=np.longdouble)
+    min_F = np.zeros((len(L_vals), len(temperatures)), dtype=np.longdouble)
     
-    E = np.zeros((len(L_vals), len(temperatures)), dtype=np.float128)
-    E2 = np.zeros((len(L_vals), len(temperatures)), dtype=np.float128)
-    mod_E = np.zeros((len(L_vals), len(temperatures)), dtype=np.float128)
+    E = np.zeros((len(L_vals), len(temperatures)), dtype=np.longdouble)
+    E2 = np.zeros((len(L_vals), len(temperatures)), dtype=np.longdouble)
+    mod_E = np.zeros((len(L_vals), len(temperatures)), dtype=np.longdouble)
 
-    mean_C = np.zeros((len(L_vals), len(temperatures)), dtype=np.float128)
-    mean_S = np.zeros((len(L_vals), len(temperatures)-1), dtype=np.float128)
-    mean_chi = np.zeros((len(L_vals), len(temperatures)), dtype=np.float128) 
-    C = np.zeros((len(L_vals), len(temperatures)), dtype=np.float128)
-    S = np.zeros((len(L_vals), len(temperatures)), dtype=np.float128)
+    mean_C = np.zeros((len(L_vals), len(temperatures)), dtype=np.longdouble)
+    mean_S = np.zeros((len(L_vals), len(temperatures)-1), dtype=np.longdouble)
+    mean_chi = np.zeros((len(L_vals), len(temperatures)), dtype=np.longdouble) 
+    C = np.zeros((len(L_vals), len(temperatures)), dtype=np.longdouble)
+    S = np.zeros((len(L_vals), len(temperatures)), dtype=np.longdouble)
 
     Tc_M_min_F = np.zeros(len(L_vals))
     Tc_mod_M = np.zeros(len(L_vals))
@@ -95,9 +95,9 @@ def main():
         JDOS = np.loadtxt(file_name + ".txt")
         
         # Partition function and Helmholtz free energy
-        Z = np.zeros(len(temperatures), dtype=np.float128)
-        Z_M = np.zeros((NM, len(temperatures)), dtype=np.float128)
-        F.append(np.zeros((NM, len(temperatures))), dtype=np.float128)
+        Z = np.zeros(len(temperatures), dtype=np.longdouble)
+        Z_M = np.zeros((NM, len(temperatures)), dtype=np.longdouble)
+        F.append(np.zeros((NM, len(temperatures)), dtype=np.longdouble))
         
         for q in range(0, NM):
             hits = np.where(JDOS[:, q] > 0)[0]
@@ -143,8 +143,8 @@ def main():
         mean_S[k] = cumtrapz(mean_C[k] / temperatures, x=temperatures, dx=np.abs(temperatures[0] - temperatures[1]))
         
         # Heat capacity and entropy
-        F_sd = np.zeros(len(temperatures), dtype=np.float128)
-        F_fd = np.zeros(len(temperatures), dtype=np.float128)
+        F_sd = np.zeros(len(temperatures), dtype=np.longdouble)
+        F_fd = np.zeros(len(temperatures), dtype=np.longdouble)
         h = np.abs(temperatures[1] - temperatures[2])
         for i in range(1, len(temperatures) - 1):
             F_sd[i] = (min_F[k][i - 1] - 2 * min_F[k][i] + min_F[k][i + 1]) / h**2
@@ -156,8 +156,8 @@ def main():
    
         # Tc apprxomation
         h = np.abs(temperatures[1] - temperatures[2])
-        M_min_F_fd = np.zeros(len(temperatures), dtype=np.float128)
-        mod_M_fd = np.zeros(len(temperatures), dtype=np.float128)
+        M_min_F_fd = np.zeros(len(temperatures), dtype=np.longdouble)
+        mod_M_fd = np.zeros(len(temperatures), dtype=np.longdouble)
         
         for i in range(1, len(temperatures) - 1):
             M_min_F_fd[i] = (M_min_F[k][i + 1] - M_min_F[k][i - 1]) / (2 * h)
@@ -302,7 +302,7 @@ def main():
     print("Tc by the linear regression from fitted Tc_mod_M -> {:.3f}; error: {:.3f}".format(Tc_Lin_Reg, np.abs(Tc_Lin_Reg - Tc_Exact) / Tc_Exact))
     
     
-    U = np.zeros((len(L_vals), len(temperatures)), dtype=np.float128)
+    U = np.zeros((len(L_vals), len(temperatures)), dtype=np.longdouble)
     U = 1 - (M4 / (3 * M2**2))
     plt.figure(6)
     for i in range(0, len(L_vals)):
@@ -344,7 +344,7 @@ def main():
 
     # BETA - mean value
     
-    mod_M_Tc = np.zeros(len(L_vals), dtype=np.float128)
+    mod_M_Tc = np.zeros(len(L_vals), dtype=np.longdouble)
     for i in range(len(L_vals)):
         mod_M_Tc[i] = mod_M[i, int(idx_Tc_mod_M[i])]
     
@@ -360,7 +360,7 @@ def main():
     
     # ALPHA - mean value
     
-    mean_C_Tc = np.zeros(len(L_vals), dtype=np.float128)
+    mean_C_Tc = np.zeros(len(L_vals), dtype=np.longdouble)
     for i in range(len(L_vals)):
         mean_C_Tc[i] = mean_C[i, int(idx_Tc_mod_M[i])]
 
@@ -376,7 +376,7 @@ def main():
     
     # GAMMA - mean value    
     
-    mean_chi_Tc = np.zeros(len(L_vals), dtype=np.float128)
+    mean_chi_Tc = np.zeros(len(L_vals), dtype=np.longdouble)
     for i in range(len(L_vals)):
         mean_chi_Tc[i] = mean_chi[i, int(idx_Tc_mod_M[i])]
     
