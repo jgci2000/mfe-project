@@ -8,15 +8,6 @@ from  scipy.integrate import cumtrapz
 # Compute the therodynamics for the Ising Model
 # João Inácio, 14th June 2021
 
-def find_log_tmp(log_tmp_E, b):
-    ret = list()
-    
-    for i in range(len(log_tmp_E[b])):
-        if log_tmp_E[b][i][1] != -np.inf:
-            ret.append(i)
-    
-    return np.array(ret)
-
 def main():
     start = time.process_time()
     
@@ -114,7 +105,6 @@ def main():
         b = 0
         k = 0
         hits = np.where(log_JDOS[b, :] != -np.inf)[0]
-        # find_log_tmp(log_tmp_E, b)
         
         log_E[i] = np.log(E_tmp[b]) + log_JDOS[b, hits[k]] - beta_vals[i] * E_tmp[b]
         log_E2[i] = np.log(E_tmp[b]**2) + log_JDOS[b, hits[k]] - beta_vals[i] * E_tmp[b]
@@ -157,14 +147,11 @@ def main():
         M_min_F[i] = np.abs(magnetizations[q_min])
         
     # Mean magnetic susceptability, mean heat capacity and mean entropy
-    # mean_C = np.zeros(len(temperatures))
     mean_S = np.zeros(len(temperatures))
     mean_chi = np.zeros(len(temperatures))
     
     for i in range(1, len(temperatures)):
-        # mean_C[i] = (E2[i] - E[i]**2) * beta_vals[i]**2
         mean_chi[i] = (M2[i] - M[i]**2) * beta_vals[i]
-
     mean_S = cumtrapz(mean_C / temperatures, x=temperatures, dx=np.abs(temperatures[0] - temperatures[1]))
 
     # Heat capacity and entropy
@@ -214,68 +201,42 @@ def main():
 
     plt.style.use('seaborn-whitegrid')
     
-    plt.figure(100)
-    for i in range(0, len(temperatures)):
-        plt.plot(magnetizations, F[:, i], '-b', lw=1)
-        plt.plot(M_min_F[i], min_F[i], '.r', ms=7.5)
-    plt.xlabel("M")
-    plt.ylabel("F")
-    
-    plt.figure(101)
-    plt.subplot(1, 2, 1)
-    plt.plot(temperatures, M_min_F, '.-b')
-    plt.xlabel("T")
-    plt.ylabel("M minF")
-    plt.subplot(1, 2, 2)
-    plt.plot(temperatures, mod_M, '.-b')
-    plt.xlabel("T")
-    plt.ylabel("<|M|>")
-    
-    
     fig, axs = plt.subplots(2, 2)
     axs[0, 0].plot(temperatures, mod_M, '.-b')
     axs[0, 0].set_xlabel("T")
     axs[0, 0].set_ylabel("<|M|>")
-    axs[0, 0].set_title("<|M|> as a function of T | L = " + str(L))
     
     axs[0, 1].plot(temperatures, E, '.-b')
     axs[0, 1].set_xlabel("T")
     axs[0, 1].set_ylabel("<E>")
-    axs[0, 1].set_title("<E> as a function of T | L = " + str(L))
     
     axs[1, 0].plot(temperatures, M_min_F, '.-b')
     axs[1, 0].set_xlabel("T/Tc")
     axs[1, 0].set_ylabel("M minF")
-    axs[1, 0].set_title("Magnetization for F minina as a function of T | L = " + str(L))
     
     for i in range(0, len(temperatures)):
         axs[1, 1].plot(magnetizations, F[:, i], '-b', lw=1)
-        axs[1, 1].plot(M_min_F[i], min_F[i], '.b', ms=7.5)
+        axs[1, 1].plot(M_min_F[i], min_F[i], '.r', ms=7.5)
     axs[1, 1].set_xlabel("M")
     axs[1, 1].set_ylabel("F")
-    axs[1, 1].set_title("F as a function of M and T | L = " + str(L))
     
     fig, axs = plt.subplots(2, 2)
     
     axs[0, 0].plot(temperatures, C, '.-b')
     axs[0, 0].set_xlabel("T")
     axs[0, 0].set_ylabel("C")
-    # axs[0, 0].set_title("Heat Capacity per spin as a function of T | L = " + str(L))
     
     axs[1, 0].plot(temperatures, mean_C, '.-b')
     axs[1, 0].set_xlabel("T")
     axs[1, 0].set_ylabel("<C>")
-    # axs[1, 0].set_title("Mean Heat Capacity per spin as a function of T | L = " + str(L))
     
     axs[0, 1].plot(temperatures, S, '.-b')
     axs[0, 1].set_xlabel("T")
     axs[0, 1].set_ylabel("S")
-    # axs[0, 1].set_title("Entropy per spin as a function of T | L = " + str(L))
     
     axs[1, 1].plot(temperatures[1:], mean_S, '.-b')
     axs[1, 1].set_xlabel("T")
     axs[1, 1].set_ylabel("<S>")
-    # axs[1, 1].set_title("Mean Entropy per spin as a function of T | L = " + str(L))
         
     print("Script runtime: {:.4f}s".format(time.process_time() - start))
     plt.show()

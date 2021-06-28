@@ -118,42 +118,36 @@ def main():
     axs[0, 0].plot(x_vals, ((4 + 2 * np.exp(8/x_vals))/(np.cosh(8/x_vals) + 3))/N_atm, '-r', label="Exato")
     axs[0, 0].set_xlabel("T")
     axs[0, 0].set_ylabel("<|M|>")
-    # axs[0, 0].set_title("<|M|> como função de T")
     axs[0, 0].legend()
     
     axs[0, 1].plot(temperatures, E, '.-b', label="WL")
     axs[0, 1].plot(x_vals, (-8 * np.sinh(8/x_vals) / (np.cosh(8/x_vals) + 3))/N_atm, '-r', label="Exato")
     axs[0, 1].set_xlabel("T")
     axs[0, 1].set_ylabel("<E>")
-    # axs[0, 1].set_title("<E> como função de T")
     axs[0, 1].legend()
     
     axs[1, 0].plot(temperatures, Z, '.-b', label="WL")
     axs[1, 0].plot(x_vals, (4 * np.cosh(8/x_vals) + 12), '-r', label="Exato")
     axs[1, 0].set_xlabel("T")
     axs[1, 0].set_ylabel("Z")
-    # axs[1, 0].set_title("Função de partição canónica como função de T")
     axs[1, 0].legend()
     
     axs[1, 1].plot(temperatures, F, '.-b', label="WL")
     axs[1, 1].plot(x_vals, (-16 - 2*x_vals*np.log(4) - x_vals*np.log(4 + 2*np.exp(-8/x_vals)))/N_atm, '-r', label="Exato")
     axs[1, 1].set_xlabel("T")
     axs[1, 1].set_ylabel("F")
-    # axs[1, 1].set_title("F como funcção de T")
     axs[1, 1].legend()
     
     axs[0, 2].plot(temperatures, mean_C, '.-b', label="WL")
     axs[0, 2].plot(x_vals, ((64 / (x_vals**2 * (np.cosh(8/x_vals) + 3))) * (np.cosh(8/x_vals) - (np.sinh(8/x_vals)**2 / (np.cosh(8/x_vals) + 3))))/N_atm, '-r', label="Exato")
     axs[0, 2].set_xlabel("T")
     axs[0, 2].set_ylabel("<C>")
-    # axs[0].set_title("Mean Heat Capacity as a function of T")
     axs[0, 2].legend() 
     
     axs[1, 2].plot(temperatures, mean_chi, '.-b', label="WL")
     axs[1, 2].plot(x_vals, ((8 * (np.exp(8/x_vals) + 1)) / (x_vals * (np.cosh(8/x_vals) + 3)))/N_atm, '-r', label="Exato")
     axs[1, 2].set_xlabel("T")
     axs[1, 2].set_ylabel("<X>")
-    # axs[1].set_title("Mean Magnetic Susceptabiility as a function of T")
     axs[1, 2].legend()
     
     

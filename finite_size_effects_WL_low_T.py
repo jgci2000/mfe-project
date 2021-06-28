@@ -14,39 +14,25 @@ def main():
     start = time.process_time()
     
     # Some constants and global arrays
-    kB = 1
-    
+     
     dim = "2D"
-
-    if dim == "2D":
-        lattice = "SS"
-        NN = 4
-        NT = 50
-        Tc_Exact = 2.269
-        temperatures = np.linspace(Tc_Exact-64/NT,Tc_Exact+64/NT ,NT+1)
-        idx_Tc = np.where(temperatures == Tc_Exact)[0][0]
-        NT = NT + 1
-        L_vals = np.array([4, 8, 16])
-        
-        nu_exact = 1
-        alpha_exact = 0
-        beta_exact = 1/8
-        gamma_exact = 7/4
-        
-    elif dim == "3D":
-        lattice = "SC"
-        NN = 6
-        NT = 50
-        temperatures = np.linspace(1, 7, NT)
-        L_vals = np.array([4,6, 8])
-        Tc_Exact = 4.51
-        
-        nu_exact = 0.63
-        alpha_exact = 0.11
-        beta_exact = 0.33
-        gamma_exact = 1.24
+    lattice = "SS"
+    NN = 4
     
-    beta_vals = 1 / (kB * temperatures)
+    NT = 50
+    Tc_Exact = 2.269
+    temperatures = np.linspace(Tc_Exact-64/NT,Tc_Exact+64/NT ,NT+1)
+    idx_Tc = np.where(temperatures == Tc_Exact)[0][0]
+    NT = NT + 1
+    
+    L_vals = np.array([4, 8, 16])
+        
+    nu_exact = 1
+    alpha_exact = 0
+    beta_exact = 1/8
+    gamma_exact = 7/4
+    
+    beta_vals = 1 / temperatures
     
     # Initialization of thermodynamic arrays
     magnetizations = list()
@@ -75,10 +61,7 @@ def main():
     
     for idx_L in range(len(L_vals)):
         L = L_vals[idx_L]
-        if dim == "2D":
-            N_atm = L ** 2
-        elif dim == "3D":
-            N_atm = L ** 3
+        N_atm = L ** 2
         
         max_E = (1 / 2) * NN * N_atm
         max_M = N_atm
@@ -173,10 +156,6 @@ def main():
         E2[idx_L] = np.real(np.exp(log_E2))
         mean_C[idx_L] = np.real(mean_C[idx_L])
         
-        for i in range(len(temperatures)):
-            if mean_C[idx_L][i] < 0:
-                mean_C[idx_L][i] = 0
-        
         # Magnetization for F minima
         for i in range(0, len(temperatures)):
             min_F[idx_L][i] = F[idx_L][0, i]
@@ -242,55 +221,47 @@ def main():
 
     plt.style.use('seaborn-whitegrid')
     
-    # fig, axs = plt.subplots(2, 2)
-    # for k in range(len(L_vals)):
-    #     axs[0, 0].plot(temperatures, mod_M[k], '.-')
-    #     axs[0, 0].set_xlabel("T")
-    #     axs[0, 0].set_ylabel("<|M|>")
-    #     axs[0, 0].set_title("<|M|> as a function of T")
+    fig, axs = plt.subplots(2, 2)
+    for k in range(len(L_vals)):
+        axs[0, 0].plot(temperatures, mod_M[k], '.-')
+        axs[0, 0].set_xlabel("T")
+        axs[0, 0].set_ylabel("<|M|>")
         
-    #     axs[0, 1].plot(temperatures, E[k], '.-')
-    #     axs[0, 1].set_xlabel("T")
-    #     axs[0, 1].set_ylabel("<E>")
-    #     axs[0, 1].set_title("<E> as a function of T")
+        axs[0, 1].plot(temperatures, E[k], '.-')
+        axs[0, 1].set_xlabel("T")
+        axs[0, 1].set_ylabel("<E>")
         
-    #     axs[1, 0].plot(temperatures, M_min_F[k], '.-')
-    #     axs[1, 0].set_xlabel("T")
-    #     axs[1, 0].set_ylabel("M minF")
-    #     axs[1, 0].set_title("Magnetization for F minina as a function of T")
+        axs[1, 0].plot(temperatures, M_min_F[k], '.-')
+        axs[1, 0].set_xlabel("T")
+        axs[1, 0].set_ylabel("M minF")
         
-    # for i in range(0, len(temperatures)):
-    #     axs[1, 1].plot(magnetizations[0], F[0][:, i], '-b', lw=1)
-    #     axs[1, 1].plot(M_min_F[0][i], min_F[0][i], '.b', ms=7.5)
-    # axs[1, 1].set_xlabel("M")
-    # axs[1, 1].set_ylabel("F")
-    # axs[1, 1].set_title("F as a function of M and T | L = " + str(L_vals[0]))
+    for i in range(0, len(temperatures)):
+        axs[1, 1].plot(magnetizations[0], F[0][:, i], '-b', lw=1)
+        axs[1, 1].plot(M_min_F[0][i], min_F[0][i], '.b', ms=7.5)
+    axs[1, 1].set_xlabel("M")
+    axs[1, 1].set_ylabel("F")
     
-    # fig, axs = plt.subplots(2, 2)
-    # for k in range(len(L_vals)):
-    #     axs[0, 0].plot(temperatures, C[k], '.-')
-    #     axs[0, 0].set_xlabel("T")
-    #     axs[0, 0].set_ylabel("C")
-    #     axs[0, 0].set_title("Heat Capacity per spin as a function of T")
+    fig, axs = plt.subplots(2, 3)
+    for k in range(len(L_vals)):
+        axs[0, 0].plot(temperatures, C[k], '.-')
+        axs[0, 0].set_xlabel("T")
+        axs[0, 0].set_ylabel("C")
         
-    #     axs[1, 0].plot(temperatures, mean_C[k], '.-')
-    #     axs[1, 0].set_xlabel("T")
-    #     axs[1, 0].set_ylabel("<C>")
-    #     axs[1, 0].set_title("Mean Heat Capacity per spin as a function of T")
+        axs[1, 0].plot(temperatures, mean_C[k], '.-')
+        axs[1, 0].set_xlabel("T")
+        axs[1, 0].set_ylabel("<C>")
         
-    #     axs[0, 1].plot(temperatures, S[k], '.-')
-    #     axs[0, 1].set_xlabel("T")
-    #     axs[0, 1].set_ylabel("S")
-    #     axs[0, 1].set_title("Entropy per spin as a function of T")
+        axs[0, 1].plot(temperatures, S[k], '.-')
+        axs[0, 1].set_xlabel("T")
+        axs[0, 1].set_ylabel("S")
         
-    #     axs[1, 1].plot(temperatures[1:], mean_S[k], '.-')
-    #     axs[1, 1].set_xlabel("T")
-    #     axs[1, 1].set_ylabel("<S>")
-    #     axs[1, 1].set_title("Mean Entropy per spin as a function of T")
-    
-    # plt.figure(4)
-    # for k in range(len(L_vals)):
-    #     plt.plot(temperatures, mean_chi[k])
+        axs[1, 1].plot(temperatures[1:], mean_S[k], '.-')
+        axs[1, 1].set_xlabel("T")
+        axs[1, 1].set_ylabel("<S>")
+        
+        axs[0, 2].plot(temperatures, mean_chi[k], '.-')
+        axs[0, 2].set_xlabel("T")
+        axs[0, 2].set_ylabel("<X>")
     
     plt.figure(5)
     plt.subplot(1, 2, 1)
@@ -312,7 +283,7 @@ def main():
     
     plt.plot(x, y, '-b')
     
-    # plt.title("Tc vs 1/L with linear regression (y={:.3f}x+{:.3f}) from Tc_M_min_F".format(a[0], a[1]))
+    plt.title("Tc vs 1/L with linear regression (y={:.3f}x+{:.3f}) from Tc_M_min_F".format(a[0], a[1]))
     black_pnts = mpatches.Patch(color='black', label='Tc')
     red_line = mpatches.Patch(color='r', label='Onsager Tc')
     blue_line = mpatches.Patch(color='b', label='LinReg')
@@ -342,7 +313,7 @@ def main():
     
     plt.plot(x, y, '-b')
     
-    # plt.title("Tc vs 1/L with linear regression (y={:.3f}x+{:.3f}) from Tc_mod_M".format(a[0], a[1]))
+    plt.title("Tc vs 1/L with linear regression (y={:.3f}x+{:.3f}) from Tc_mod_M".format(a[0], a[1]))
     black_pnts = mpatches.Patch(color='black', label='Tc')
     red_line = mpatches.Patch(color='r', label='Onsager Tc')
     blue_line = mpatches.Patch(color='b', label='LinReg')
@@ -367,10 +338,8 @@ def main():
     black_pnts = mpatches.Patch(color='black', label="L32")
     plt.legend(handles=[blue_line, red_line, green_line, black_pnts])
  
-
     plt.xlabel("T")
     plt.ylabel("U(T, L)")
-    # plt.title("Binber Cumulant as a function of L and T")
     
     dif = U[1, :] - U[0, :]
     idx = 0
@@ -394,15 +363,10 @@ def main():
     for i in range(len(L_vals)):
         mod_M_Tc[i] = mod_M[i, idx_Tc]
     
-    # plt.figure(10)
-    # plt.plot(np.log(L_vals), np.log(mod_M_Tc), '*r')
-    
     a = np.polyfit(np.log(L_vals), np.log(mod_M_Tc), 1) 
     beta = a[0]
     print()
     print("beta: {:.3f}; exact: {:.3f}".format(-beta, beta_exact))
-    
-    # plt.plot(np.arange(1, 5, 0.1), a[0] * np.arange(1, 5, 0.1) + a[1], '-b')
     
     # ALPHA - mean value
     
@@ -410,15 +374,10 @@ def main():
     for i in range(len(L_vals)):
         mean_C_Tc[i] = mean_C[i, idx_Tc]
 
-    # plt.figure(11)
-    # plt.plot(np.log(L_vals), np.log(mean_C_Tc), '*r')
-    
     a = np.polyfit(np.log(L_vals), np.log(mean_C_Tc), 1)
     alpha = a[0]
     print()
     print("alpha: {:.3f}; exact: {:.3f}".format(alpha, alpha_exact))
-    
-    # plt.plot(np.arange(1, 5, 0.1), a[0] * np.arange(1, 5, 0.1) + a[1], '-b')
     
     # GAMMA - mean value    
     
@@ -426,16 +385,11 @@ def main():
     for i in range(len(L_vals)):
         mean_chi_Tc[i] = mean_chi[i, idx_Tc]
     
-    # plt.figure(12)
-    # plt.plot(np.log(L_vals), np.log(mean_chi_Tc), '*r')
-    
     a = np.polyfit(np.log(L_vals), np.log(mean_chi_Tc), 1)
     gamma = a[0]
     print()
     print("gamma: {:.3f}; exact: {:.3f}".format(gamma, gamma_exact))
     
-    # plt.plot(np.arange(1, 5, 0.1), a[0] * np.arange(1, 5, 0.1) + a[1], '-b')
-   
     print("Runtime:", time.process_time() - start)
     plt.show()
     
