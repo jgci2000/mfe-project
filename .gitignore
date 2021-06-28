@@ -5,6 +5,13 @@ __pycache__/
 
 
 .DS_Store
+*.aux
+*.bbl
+*.log
+*.out
+*.toc
+*.synctex.gz
+
 
 # C extensions
 *.so
