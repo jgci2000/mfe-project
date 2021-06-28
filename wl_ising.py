@@ -7,7 +7,7 @@ import time
 
 # System and simualtion parameters
 
-L = 8
+L = 2
 
 dim = 2
 lattice = "SS"
@@ -142,8 +142,6 @@ for q in range(NM):
     
     sum_ln_JDOS = ln_JDOS[first_idx, q] + np.log(temp)
 
-    print(first_idx, temp, sum_ln_JDOS)
-    
     for i in range(NE):
         if ln_JDOS[i, q] > 0:
             JDOS[i, q] = np.exp(ln_JDOS[i ,q] + np.log(norm_factor[q]) - sum_ln_JDOS)
