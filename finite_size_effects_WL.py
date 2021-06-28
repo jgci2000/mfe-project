@@ -21,8 +21,8 @@ def main():
     if dim == "2D":
         lattice = "SS"
         NN = 4
-        NT = 35
-        temperatures = np.linspace(2, 3, NT)
+        NT = 100
+        temperatures = np.linspace(1.5, 4, NT)
         L_vals = np.array([4, 8, 16])
         Tc_Exact = 2.269
         
@@ -137,7 +137,7 @@ def main():
             
         # Mean magnetic susceptability, mean heat capacity and mean entropy
         for i in range(len(temperatures)):
-            mean_C[k][i] = (E2[k][i] - E[k][i]**2) * beta_vals[i]
+            mean_C[k][i] = (E2[k][i] - E[k][i]**2) * beta_vals[i]**2
             mean_chi[k][i] = (M2[k][i] - M[k][i]**2) * beta_vals[i]
             
         mean_S[k] = cumtrapz(mean_C[k] / temperatures, x=temperatures, dx=np.abs(temperatures[0] - temperatures[1]))
@@ -354,7 +354,7 @@ def main():
     a = np.polyfit(np.log(L_vals), np.log(mod_M_Tc), 1) 
     beta = a[0]
     print()
-    print("beta: {:.3f}; exact: {:.3f}".format( - beta * nu, beta_exact))
+    print("beta: {:.3f}; exact: {:.3f}".format( - beta, beta_exact))
     
     plt.plot(np.arange(1, 5, 0.1), a[0] * np.arange(1, 5, 0.1) + a[1], '-b')
     
@@ -370,7 +370,7 @@ def main():
     a = np.polyfit(np.log(L_vals), np.log(mean_C_Tc), 1)
     alpha = a[0]
     print()
-    print("alpha: {:.3f}; exact: {:.3f}".format(alpha * nu, alpha_exact))
+    print("alpha: {:.3f}; exact: {:.3f}".format(alpha, alpha_exact))
     
     plt.plot(np.arange(1, 5, 0.1), a[0] * np.arange(1, 5, 0.1) + a[1], '-b')
     
@@ -386,7 +386,7 @@ def main():
     a = np.polyfit(np.log(L_vals), np.log(mean_chi_Tc), 1)
     gamma = a[0]
     print()
-    print("gamma: {:.3f}; exact: {:.3f}".format(gamma * nu, gamma_exact))
+    print("gamma: {:.3f}; exact: {:.3f}".format(gamma, gamma_exact))
     
     plt.plot(np.arange(1, 5, 0.1), a[0] * np.arange(1, 5, 0.1) + a[1], '-b')
    

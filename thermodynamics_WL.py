@@ -19,7 +19,7 @@ def main():
     lattice = "SS"
     NN = 4
     
-    L = 4
+    L = 8
     N_atm = 1 * L ** 2
     
     max_E = (1 / 2) * NN * N_atm
@@ -27,7 +27,7 @@ def main():
 
     NE = int(1 + (max_E / 2))
     NM = N_atm + 1
-    NT = 100
+    NT = 10
     
     energies = np.linspace(- max_E, max_E, NE)
     magnetizations = np.linspace(- max_M, max_M, NM)
@@ -40,7 +40,7 @@ def main():
     JDOS = np.loadtxt(file_name + ".txt")
         
     # Compute thermodynamics from mean JDOS
-    temperatures = np.linspace(1, 4, NT)
+    temperatures = np.linspace(0.5, 5, NT)
     beta_vals = 1 / (kB * temperatures)
     
     # Partition function and Helmholtz free energy
@@ -56,7 +56,7 @@ def main():
         
         Z += Z_M[q, :]
         F[q, :] = - kB * temperatures * np.log(Z_M[q, :])
-    
+   
     # Magnetizations
     M = np.zeros(len(temperatures))
     M2 = np.zeros(len(temperatures))
@@ -78,6 +78,9 @@ def main():
         for j in range(len(energies)):
             E[i] += energies[j] * sum(JDOS[j, :]) * np.exp(- beta_vals[i] * energies[j]) / Z[i]
             E2[i] += (energies[j]**2) * sum(JDOS[j, :]) * np.exp(- beta_vals[i] * energies[j]) / Z[i]
+    
+    print(E)
+    print(E2)
     
     # Magnetization for F minima
     M_min_F = np.zeros(len(temperatures))
@@ -102,7 +105,7 @@ def main():
         mean_C[i] = (E2[i] - E[i]**2) * beta_vals[i]
         
     mean_S = cumtrapz(mean_C / temperatures, x=temperatures, dx=np.abs(temperatures[0] - temperatures[1]))
-    
+    print(mean_C)
     # Heat capacity and entropy
     C = np.zeros(len(temperatures))
     S = np.zeros(len(temperatures))
